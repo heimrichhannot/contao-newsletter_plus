@@ -1,0 +1,93 @@
+
+<!-- indexer::stop -->
+<div class="<?php echo $this->class; ?> block"<?php echo $this->cssID; ?><?php if ($this->style): ?> style="<?php echo $this->style; ?>"<?php endif; ?>>
+	<?php if ($this->headline): ?>
+		<<?php echo $this->hl; ?>><?php echo $this->headline; ?></<?php echo $this->hl; ?>>
+	<?php endif; ?>
+	<?php if ($this->message): ?>
+		<div class="form-message">
+			<p class="<?php echo $this->mclass; ?>"><?php echo $this->message; ?></p>
+		</div>
+	<?php endif; ?>
+	
+	<form action="<?php echo $this->action; ?>" id="<?php echo $this->formId; ?>" method="post" class="form-inline-full">
+		<div class="formbody">
+		
+		<input type="hidden" name="FORM_SUBMIT" value="<?php echo $this->formId; ?>">
+		<input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}">
+		<?php if (!$this->showChannels): ?>
+			<?php foreach ($this->channels as $id=>$title): ?>
+				<input type="hidden" name="channels[]" value="<?php echo $id; ?>">
+			<?php endforeach; ?>
+		<?php endif; ?>
+		
+		<?php if(isset($this->forms['salutation'])):?>
+			<?php echo $this->forms['salutation']->getErrorAsHTML();?>
+			<?php echo $this->forms['salutation']->generate();?>
+		<?php endif;?>
+		<?php if(isset($this->forms['title'])):?>
+		  <?php echo $this->forms['title']->getErrorAsHTML();?>
+			<?php echo $this->forms['title']->generate();?>
+		<?php endif;?>
+		<?php if(isset($this->forms['firstname'])):?>
+			<?php echo $this->forms['firstname']->getErrorAsHTML();?>
+			<?php echo $this->forms['firstname']->generateLabel();?>
+			<?php echo $this->forms['firstname']->generate();?>
+		<?php endif;?>
+		<?php if(isset($this->forms['lastname'])):?>
+		 	<?php echo $this->forms['lastname']->getErrorAsHTML();?>
+			<?php echo $this->forms['lastname']->generateLabel();?>
+			<?php echo $this->forms['lastname']->generate();?>
+		<?php endif;?>
+		<?php if(isset($this->forms['company'])):?>
+		 	<?php echo $this->forms['company']->getErrorAsHTML();?>
+			<?php echo $this->forms['company']->generateLabel();?>
+			<?php echo $this->forms['company']->generate();?>
+		<?php endif;?>
+		<?php echo $this->forms['email']->getErrorAsHTML();?>
+		<?php echo $this->forms['email']->generateLabel();?>
+		<?php echo $this->forms['email']->generate();?>
+		<?php if(isset($this->forms['street'])):?>
+		 	<?php echo $this->forms['street']->getErrorAsHTML();?>
+			<?php echo $this->forms['street']->generateLabel();?>
+			<?php echo $this->forms['street']->generate();?>
+		<?php endif;?>
+		<?php if(isset($this->forms['ziploc'])):?>
+		 	<?php echo $this->forms['ziploc']->getErrorAsHTML();?>
+			<?php echo $this->forms['ziploc']->generateLabel();?>
+			<?php echo $this->forms['ziploc']->generate();?>
+		<?php endif;?>
+		<?php if(isset($this->forms['phone'])):?>
+		 	<?php echo $this->forms['phone']->getErrorAsHTML();?>
+			<?php echo $this->forms['phone']->generateLabel();?>
+			<?php echo $this->forms['phone']->generate();?>
+		<?php endif;?>		
+		<?php if(isset($this->forms['comment'])):?>
+		 	<?php echo $this->forms['comment']->getErrorAsHTML();?>
+			<?php echo $this->forms['comment']->generateLabel();?>
+			<?php echo $this->forms['comment']->generate();?>
+		<?php endif;?>				
+		<?php if ($this->showChannels): ?>
+			<label for="ctrl_channels_<?php echo $this->id; ?>" class="invisible"><?php echo $this->channelsLabel; ?></label>
+			<div id="ctrl_channels_<?php echo $this->id; ?>" class="checkbox_container">
+				<?php foreach ($this->channels as $id=>$title): ?>
+			<span><input type="checkbox" name="channels[]" id="opt_<?php echo $this->id; ?>_<?php echo $id; ?>" value="<?php echo $id; ?>" class="checkbox"> <label for="opt_<?php echo $this->id; ?>_<?php echo $id; ?>"><?php echo $title; ?></label></span>
+				<?php endforeach; ?>
+			</div>
+		<?php endif; ?>
+		
+		<div class="submit_container">
+			<input type="submit" name="submit" class="submit" value="<?php echo $this->submit; ?>">
+		</div>
+		</div>
+	</form>
+	
+	<?php if ($this->message || $this->hasError): ?>
+	<script>
+	try {
+	  window.scrollTo(null, ($('<?php echo $this->formId; ?>').getParent('.mod_subscribe').getPosition().y - 20));
+	} catch(e) {}
+	</script>
+	<?php endif; ?>
+</div>
+<!-- indexer::continue -->
