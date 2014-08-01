@@ -72,7 +72,7 @@ class ChannelFieldWizard extends \Widget
 			}
 		}
 
-		$options = array_values($options);
+		$options = is_array($options) ? array_values($options) : array();
 		$varInput = $this->validator($options);
 
 		if (!$this->hasErrors())

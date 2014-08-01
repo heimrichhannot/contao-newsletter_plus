@@ -123,19 +123,19 @@ class NewsletterFormSubscribe extends \Widget
 		if($this->Input->get('token'))
 		{
 			$this->import('Database');
-			
+
 			$objChannelPage = $this->Database->prepare("SELECT p.id, p.alias FROM tl_newsletter_recipients r LEFT JOIN tl_newsletter_channel c ON r.pid=c.id LEFT JOIN tl_page p ON p.id = c.channel_page WHERE token=?")
 			->execute($this->Input->get('token'));
-		
+
 			if($objChannelPage->numRows)
 			{
 				$this->redirect($this->generateFrontendUrl($objChannelPage->fetchAssoc()) . ($GLOBALS['TL_CONFIG']['disableAlias'] ? '&amp;' : '?') . 'token=' . $this->Input->get('token'));
 			}
 		}
-		
+
 		$strOptions = '';
-		
-		if(count($this->arrOptions) > 0) 
+
+		if(count($this->arrOptions) > 0)
 		{
 			$strOptions .= sprintf('<fieldset id="ctrl_%s" class="checkbox_container%s">',
 										$this->strId,
@@ -144,16 +144,16 @@ class NewsletterFormSubscribe extends \Widget
 										$this->strLabel,
 										($this->required ? '<span class="mandatory">*</span>' : ''),
 										$this->xlabel);
-			
+
 			foreach($this->arrOptions as $channel)
 			{
 				$checked = '';
-				
-				if((is_array($this->varValue) && in_array($channel['value'] , $this->varValue) || $this->varValue == $channel['value']) 
+
+				if((is_array($this->varValue) && in_array($channel['value'] , $this->varValue) || $this->varValue == $channel['value'])
 					|| ($channel['selected'] == 1) && !(array_key_exists('FORM_SUBMIT', $_POST))){
 					$checked = ' checked="checked"';
 				}
-				
+
 				$strOptions .=  sprintf('<span><input type="checkbox" name="%s" id="opt_%s" class="checkbox" value="%s"%s%s <label for="opt_%s">%s</label></span>',
 										$this->strName . ((count($this->arrOptions) > 1) ? '[]' : ''),
 										$this->strId.'_'.$channel['value'],
@@ -163,7 +163,7 @@ class NewsletterFormSubscribe extends \Widget
 										$this->strId.'_'.$channel['value'],
 										$channel['label']);
 			}
-			
+
 			$strOptions .= '</fieldset>'. $this->addSubmit();
 		}
 		return $strOptions;
@@ -206,5 +206,30 @@ class NewsletterFormSubscribe extends \Widget
 			
 			$subscriber->addFromExtForm(array_keys($channels));
 		}
+	}
+
+	/**
+	 * Generate the options
+	 *
+	 * @return array The options array
+	 */
+	protected function getOptions()
+	{
+		$arrOptions = array();
+
+		foreach ($this->arrOptions as $i=>$arrOption)
+		{
+			$arrOptions[] = array
+			(
+				'name'       => $this->strName . ((count($this->arrOptions) > 1) ? '[]' : ''),
+				'id'         => $this->strId . '_' . $i,
+				'value'      => $arrOption['value'],
+				'checked'    => $this->isChecked($arrOption),
+				'attributes' => $this->getAttributes(),
+				'label'      => $arrOption['label']
+			);
+		}
+
+		return $arrOptions;
 	}
 }
