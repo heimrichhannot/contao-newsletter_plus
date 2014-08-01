@@ -49,7 +49,7 @@ class ChannelFieldWizard extends \Widget
 	{
 		$mandatory = $this->mandatory;
 		$options = deserialize($this->getPost($this->strName));
-		
+
 		// Check labels only (values can be empty)
 		if (is_array($options))
 		{

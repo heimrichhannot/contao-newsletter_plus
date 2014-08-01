@@ -49,7 +49,7 @@ class ChannelWizard extends \Widget
 	{
 		$mandatory = $this->mandatory;
 		$options = deserialize($this->getPost($this->strName));
-		
+
 		// Check labels only (values can be empty)
 		if (is_array($options))
 		{
@@ -95,7 +95,6 @@ class ChannelWizard extends \Widget
 	 */
 	public function generate()
 	{
-
 		// Make sure there is at least an empty array
 		if (!is_array($this->varValue) || !$this->varValue[0])
 		{

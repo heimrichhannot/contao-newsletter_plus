@@ -7,7 +7,7 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['nlChannels'] = array
 	'exclude'          => true,
 	'inputType'        => 'channelWizard',
 	'eval'             => array('mandatory' => true),
-	'options_callback' => array('ChannelWizard', 'getChannels'),
+	'options_callback' => array('HeimrichHannot\NewsletterPlus\ChannelWizard', 'getChannels'),
 	'sql'              => "blob NULL"
 );
 
@@ -17,7 +17,7 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['nlFieldMapping'] = array
 	'exclude'          => true,
 	'inputType'        => 'channelFieldWizard',
 	'eval'             => array('mandatory' => true),
-	'options_callback' => array('ChannelFieldWizard', 'getChannelFields'),
+	'options_callback' => array('HeimrichHannot\NewsletterPlus\ChannelFieldWizard', 'getChannelFields'),
 	'sql'              => "blob NULL"
 );
 
@@ -51,10 +51,10 @@ if (is_array($GLOBALS['TL_DCA']['tl_form_field']['fields']['type']['options'])) 
 }
 
 // add back end form fields
-$GLOBALS['BE_FFL']['nlSubscribe']    = 'NewsletterFormSubscribe';
-$GLOBALS['BE_FFL']['nlSubscribeMsg'] = 'NewsletterFormSubscribeMsg';
+$GLOBALS['BE_FFL']['nlSubscribe']    = 'HeimrichHannot\NewsletterPlus\NewsletterFormSubscribe';
+$GLOBALS['BE_FFL']['nlSubscribeMsg'] = 'HeimrichHannot\NewsletterPlus\NewsletterFormSubscribeMsg';
 
 
 // add front end form fields
-$GLOBALS['TL_FFL']['nlSubscribe']    = 'NewsletterFormSubscribe';
-$GLOBALS['TL_FFL']['nlSubscribeMsg'] = 'NewsletterFormSubscribeMsg';
+$GLOBALS['TL_FFL']['nlSubscribe']    = 'HeimrichHannot\NewsletterPlus\NewsletterFormSubscribe';
+$GLOBALS['TL_FFL']['nlSubscribeMsg'] = 'HeimrichHannot\NewsletterPlus\NewsletterFormSubscribeMsg';
