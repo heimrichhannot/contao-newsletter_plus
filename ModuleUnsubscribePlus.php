@@ -1,43 +1,8 @@
-<?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
+<?php
 
-/**
- * Contao Open Source CMS
- * Copyright (C) 2005-2011 Leo Feyer
- *
- * Formerly known as TYPOlight Open Source CMS.
- *
- * This program is free software: you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation, either
- * version 3 of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program. If not, please visit the Free
- * Software Foundation website at <http://www.gnu.org/licenses/>.
- *
- * PHP version 5
- * @copyright  Leo Feyer 2005-2011
- * @author     Leo Feyer <http://www.contao.org>
- * @package    Newsletter
- * @license    LGPL
- * @filesource
- */
+namespace HeimrichHannot\NewsletterPlus;
 
-
-/**
- * Class ModuleUnsubscribe
- *
- * Front end module "newsletter unsubscribe".
- * @copyright  Leo Feyer 2005-2011
- * @author     Leo Feyer <http://www.contao.org>
- * @package    Controller
- */
-class ModuleUnsubscribePlus extends ModuleUnsubscribe
+class ModuleUnsubscribePlus extends \ModuleUnsubscribe
 {
 
 	/**
@@ -56,9 +21,9 @@ class ModuleUnsubscribePlus extends ModuleUnsubscribe
 	{
 		if (TL_MODE == 'BE')
 		{
-			$objTemplate = new BackendTemplate('be_wildcard');
+			$objTemplate = new \BackendTemplate('be_wildcard');
 
-			$objTemplate->wildcard = '### NEWSLETTER UNSUBSCRIBE PLUS ###';
+			$objTemplate->wildcard = '### ' . utf8_strtoupper($GLOBALS['TL_LANG']['FMD']['unsubscribe'][0]) . ' ###';
 			$objTemplate->title = $this->headline;
 			$objTemplate->id = $this->id;
 			$objTemplate->link = $this->name;
@@ -87,7 +52,7 @@ class ModuleUnsubscribePlus extends ModuleUnsubscribe
 		// Overwrite default template
 		if ($this->nl_template)
 		{
-			$this->Template = new FrontendTemplate($this->nl_template);
+			$this->Template = new \FrontendTemplate($this->nl_template);
 			$this->Template->setData($this->arrData);
 		}
 
@@ -107,7 +72,7 @@ class ModuleUnsubscribePlus extends ModuleUnsubscribe
 		if (strlen($_SESSION['UNSUBSCRIBE_ERROR']))
 		{
 			$blnHasError = true;
-			$this->Template->mclass = 'error';
+			$this->Template->mclass = 'danger';
 			$this->Template->message = $_SESSION['UNSUBSCRIBE_ERROR'];
 			$_SESSION['UNSUBSCRIBE_ERROR'] = '';
 		}
@@ -115,7 +80,7 @@ class ModuleUnsubscribePlus extends ModuleUnsubscribe
 		// Confirmation message
 		if (strlen($_SESSION['UNSUBSCRIBE_CONFIRM']))
 		{
-			$this->Template->mclass = 'confirm';
+			$this->Template->mclass = 'success';
 			$this->Template->message = $_SESSION['UNSUBSCRIBE_CONFIRM'];
 			$_SESSION['UNSUBSCRIBE_CONFIRM'] = '';
 		}
@@ -160,7 +125,7 @@ class ModuleUnsubscribePlus extends ModuleUnsubscribe
 
 		$arrSubscriptions = array();
 		
-		$email = $this->idnaEncodeEmail($this->Input->post('email', true));
+		$email = \Idna::encodeEmail($this->Input->post('email', true));
 		
 		$subscriber = new Subscriber($email);
 
@@ -184,7 +149,10 @@ class ModuleUnsubscribePlus extends ModuleUnsubscribe
 
 		// check for cleverreach support
 		$objChannel = $this->Database->execute("SELECT id FROM tl_newsletter_channel WHERE cleverreach_active = 1 AND id IN(" . implode(',', array_map('intval', $arrRemove)) . ")");
-		
+
+		// TODO: multiple channel unsubscription
+		$subscriber->getByChannel($arrRemove[0]);
+
 		// Remove subscriptions
 		$subscriber->remove($arrRemove);
 		
@@ -223,7 +191,7 @@ class ModuleUnsubscribePlus extends ModuleUnsubscribe
 			}
 		}
 
-		if($subscriber->sendUnSubscribeMail($arrRemove, $this->nl_subject_unsubscribe, $this->nl_unsubscribe))
+		if($subscriber->sendUnSubscribeMail($arrRemove))
 		{
 			$this->reload();
 		}

@@ -1,4 +1,4 @@
-<?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
+<?php
 
 /* FE Fields */
 $GLOBALS['TL_LANG']['MSC']['cw_selected'] = 'Pre-Selected';

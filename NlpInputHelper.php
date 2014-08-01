@@ -1,6 +1,8 @@
-<?php if (!defined('TL_ROOT')) die('You can not access this file directly!');
+<?php
 
-class NlpInputHelper extends Frontend
+namespace HeimrichHannot\NewsletterPlus;
+
+class NlpInputHelper extends \Frontend
 {
 	const NLSUBSCRIBEFORMPRESENT = 'nlFormPresent';
 	
@@ -22,13 +24,12 @@ class NlpInputHelper extends Frontend
 	public function addInputFields($channel)
 	{
 		// load additional inputs
-		$active = unserialize($channel->subscribeplus_inputs);
-	
-		$required = unserialize($channel->subscribeplus_required_inputs);
+		$active = deserialize($channel->subscribeplus_inputs, true);
+		$required = deserialize($channel->subscribeplus_required_inputs, true);
 	
 		$forms = array();
 		
-		if(count($active) > 0)
+		if(!empty($active))
 		{
 			foreach ($GLOBALS['TL_DCA']['tl_subscribe_plus']['fields'] as $name => $form)
 			{
@@ -59,20 +60,20 @@ class NlpInputHelper extends Frontend
 			}
 			
 		}
-		
+
 		return $forms;
 	}
 	
 	public function getPlusFieldsDcaByChannel($channel)
 	{
 		// load additional inputs
-		$active = unserialize($channel->subscribeplus_inputs);
+		$active = deserialize($channel->subscribeplus_inputs, true);
 		
-		$required = unserialize($channel->subscribeplus_required_inputs);
+		$required = deserialize($channel->subscribeplus_required_inputs, true);
 		
 		$fields = array();
 		
-		if(count($active) > 0)
+		if(!empty($active))
 		{
 			foreach($active as $key)
 			{
@@ -85,7 +86,7 @@ class NlpInputHelper extends Frontend
 				}
 			}
 		}
-		
+
 		return $fields;
 	}
 	

@@ -1,6 +1,8 @@
-<?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
+<?php
 
-class ChannelWizard extends Widget
+namespace HeimrichHannot\NewsletterPlus;
+
+class ChannelWizard extends \Widget
 {
 
 	/**

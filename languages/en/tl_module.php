@@ -1,4 +1,4 @@
-<?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
+<?php
 
 $GLOBALS['TL_LANG']['tl_module']['subscribe_plus_legend'] = 'Subscribe Plus configuration';
 

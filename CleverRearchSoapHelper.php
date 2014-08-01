@@ -1,6 +1,8 @@
-<?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
+<?php
 
-class CleverRearchSoapHelper extends System
+namespace HeimrichHannot\NewsletterPlus;
+
+class CleverRearchSoapHelper extends \System
 {
 	
 	private static $wsdl_url = "http://api.cleverreach.com/soap/interface_v4.1.php?wsdl";

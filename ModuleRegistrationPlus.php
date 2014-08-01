@@ -1,6 +1,8 @@
-<?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
+<?php
 
-class ModuleRegistrationPlus extends ModuleRegistration
+namespace HeimrichHannot\NewsletterPlus;
+
+class ModuleRegistrationPlus extends \ModuleRegistration
 {
 
 	protected function compile()

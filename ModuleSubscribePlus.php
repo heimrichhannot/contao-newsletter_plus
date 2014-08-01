@@ -1,13 +1,13 @@
-<?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
+<?php
 
-class ModuleSubscribePlus extends ModuleSubscribe
+namespace HeimrichHannot\NewsletterPlus;
+
+class ModuleSubscribePlus extends \ModuleSubscribe
 {
 	/**
 	 * Template
 	 * @var string
 	 */
-	protected $strTemplate = 'nl_subscribe_plus';
-
 	protected $strFormId = 'tl_subscribe_plus';
 	
 	private $doNotSubmit = false;
@@ -20,13 +20,14 @@ class ModuleSubscribePlus extends ModuleSubscribe
 	 * Display a wildcard in the back end
 	 * @return string
 	 */
+
 	public function generate()
 	{
 		if (TL_MODE == 'BE')
 		{
-			$objTemplate = new BackendTemplate('be_wildcard');
+			$objTemplate = new \BackendTemplate('be_wildcard');
 
-			$objTemplate->wildcard = '### NEWSLETTER SUBSCRIBE PLUS ###';
+			$objTemplate->wildcard = '### ' . utf8_strtoupper($GLOBALS['TL_LANG']['FMD']['subscribe'][0]) . ' ###';
 			$objTemplate->title = $this->headline;
 			$objTemplate->id = $this->id;
 			$objTemplate->link = $this->name;
@@ -54,7 +55,7 @@ class ModuleSubscribePlus extends ModuleSubscribe
 		// Overwrite default template
 		if ($this->nl_template)
 		{
-			$this->Template = new FrontendTemplate($this->nl_template);
+			$this->Template = new \FrontendTemplate($this->nl_template);
 			$this->Template->setData($this->arrData);
 		}
 		
@@ -81,7 +82,7 @@ class ModuleSubscribePlus extends ModuleSubscribe
 		->execute($this->jumpTo);
 		
 		// remove token from request url, to prevent wrong token invalid messages
-		$url = parse_url($this->getIndexFreeRequest());
+		$url = parse_url(\Environment::get('indexFreeRequest'));
 		
 		// Default template variables
 		$this->Template->forms = $forms;
@@ -90,7 +91,6 @@ class ModuleSubscribePlus extends ModuleSubscribe
 		$this->Template->submit = specialchars($GLOBALS['TL_LANG']['MSC']['subscribe']);
 		$this->Template->channelsLabel = $GLOBALS['TL_LANG']['MSC']['nl_channels'];
 		$this->Template->emailLabel = $GLOBALS['TL_LANG']['MSC']['emailAddress'];
-		$this->Template->action = $objPage->numRows ? $this->generateFrontendUrl($objPage->row()) : $url['path'];
 		$this->Template->formId = $this->strFormId;
 		$this->Template->id = $this->id;
 		
@@ -119,7 +119,7 @@ class ModuleSubscribePlus extends ModuleSubscribe
 		if (strlen($_SESSION['SUBSCRIBE_ERROR']))
 		{
 			$blnHasError  = true;
-			$this->Template->mclass = 'error';
+			$this->Template->mclass = 'danger';
 			$this->Template->message = $_SESSION['SUBSCRIBE_ERROR'];
 			$_SESSION['SUBSCRIBE_ERROR'] = '';
 		}
@@ -127,11 +127,12 @@ class ModuleSubscribePlus extends ModuleSubscribe
 		// Confirmation message
 		if (strlen($_SESSION['SUBSCRIBE_CONFIRM']))
 		{
-			$this->Template->mclass = 'confirm';
+			$this->Template->mclass = 'success';
 			$this->Template->message = $_SESSION['SUBSCRIBE_CONFIRM'];
 			$_SESSION['SUBSCRIBE_CONFIRM'] = '';
 		}
-		
+
+		$this->Template->action = ($objPage->numRows ? $this->generateFrontendUrl($objPage->row()) : $url['path']) . (($blnHasError || $this->doNotSubmit || $this->Template->message) ? '#' . $this->strFormId : '');
 		$this->Template->hasError = ($blnHasError || $this->doNotSubmit);
 	}
 	
@@ -141,16 +142,18 @@ class ModuleSubscribePlus extends ModuleSubscribe
 	 */
 	protected function activateRecipient()
 	{
+		global $objPage;
+
 		// Check the token
 		$objRecipient = $this->Database->prepare("SELECT r.id, r.email, c.id AS cid, c.title, c.cleverreach_active FROM tl_newsletter_recipients r LEFT JOIN tl_newsletter_channel c ON r.pid=c.id WHERE token=?")
 									   ->execute($this->Input->get('token'));
 
 		if ($objRecipient->numRows < 1)
 		{
-			$this->Template->mclass = 'error';
-			$this->Template->message = $GLOBALS['TL_LANG']['ERR']['invalidToken'];
+			$this->Template->mclass = 'danger';
+			$_SESSION['SUBSCRIBE_ERROR'] = $GLOBALS['TL_LANG']['ERR']['invalidToken'];
 			$_SESSION['SUBSCRIBED'] = true;
-			return;
+			$this->redirect($this->generateFrontendUrl($objPage->row()) . '#' . $this->strFormId);
 		}
 		
 		$subscriber = new Subscriber($objRecipient->email);
@@ -159,12 +162,18 @@ class ModuleSubscribePlus extends ModuleSubscribe
 		$arrChannels = $objRecipient->fetchEach('title');
 		$arrCids = $objRecipient->fetchEach('cid');
 		$arrCR = $objRecipient->fetchEach('cleverreach_active');
-		
-		foreach($arrCids as $key => $cid)
+
+		if(is_array($arrCR) && !empty($arrCR))
 		{
-			if($arrCR[$key]['cleverreach_active']	== 1){
-				$subscriber->pid = $cid;
-				$subscriber->activateCR();
+			foreach($arrCids as $key => $cid)
+			{
+				if(!isset($arrCR[$key])) continue;
+
+				if($arrCR[$key]['cleverreach_active'] == 1)
+				{
+					$subscriber->pid = $cid;
+					$subscriber->activateCR();
+				}
 			}
 		}
 
@@ -188,10 +197,11 @@ class ModuleSubscribePlus extends ModuleSubscribe
 		}
 
 		// Confirm activation
-		$this->Template->mclass = 'confirm';
-		$this->Template->message = $GLOBALS['TL_LANG']['MSC']['nl_activate'];
+		$this->Template->mclass = 'success';
+		$_SESSION['SUBSCRIBE_CONFIRM'] = $GLOBALS['TL_LANG']['MSC']['nl_activate'];
 		//prevent rendering messages twice a page
 		$_SESSION['SUBSCRIBED'] = true;
+		$this->redirect($this->generateFrontendUrl($objPage->row()) . '#' . $this->strFormId);
 	}
 
 	/**
@@ -199,7 +209,7 @@ class ModuleSubscribePlus extends ModuleSubscribe
 	 */
 	protected function addRecipient()
 	{
-		
+		global $objPage;
 		$arrChannels = $this->Input->post('channels');
 		$arrChannels = array_intersect($arrChannels, $this->nl_channels); // see #3240
 		
@@ -210,7 +220,7 @@ class ModuleSubscribePlus extends ModuleSubscribe
 			$this->reload();
 		}
 		
-		$email = $this->idnaEncodeEmail($this->Input->post('email', true));
+		$email = \Idna::encodeEmail($this->Input->post('email', true));
 		
 		$subscriber = new Subscriber($email);
 
@@ -223,7 +233,7 @@ class ModuleSubscribePlus extends ModuleSubscribe
 		if (!is_array($arrNew) || count($arrNew) < 1)
 		{
 			$_SESSION['SUBSCRIBE_ERROR'] = $GLOBALS['TL_LANG']['ERR']['subscribed'];
-			$this->reload();
+			$this->redirect($this->generateFrontendUrl($objPage->row()) . '#' . $this->strFormId);
 		}
 		
 		// Remove old subscriptions that have not been activated yet
@@ -263,7 +273,7 @@ class ModuleSubscribePlus extends ModuleSubscribe
 			{
 				foreach ($GLOBALS['TL_DCA']['tl_subscribe_plus']['fields'] as $name => $form)
 				{
-					$subscriber->{$name} = $this->Input->post($name);
+					$subscriber->{$name} = $this->Input->post($name) ? $this->Input->post($name) : '';
 				}
 			}
 			// Add new subscriptions
@@ -278,7 +288,6 @@ class ModuleSubscribePlus extends ModuleSubscribe
 		}
 		
 		
-		global $objPage;
 		// Redirect to jumpTo page
 		if (strlen($this->jumpTo) && $this->jumpTo != $objPage->id)
 		{
@@ -294,8 +303,9 @@ class ModuleSubscribePlus extends ModuleSubscribe
 		
 		
 		// Activation e-mail
-		if($subscriber->sendActivationMail($objChannel->fetchEach('id'), $this->nl_subject, $this->nl_subscribe)){
-			$this->reload();
+		if($subscriber->sendActivationMail($objChannel->fetchEach('id')))
+		{
+			$this->redirect($this->generateFrontendUrl($objPage->row()) . '#' . $this->strFormId);
 		}
 		
 	}

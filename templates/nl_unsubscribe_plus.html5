@@ -4,13 +4,15 @@
 	<?php if ($this->headline): ?>
 		<<?php echo $this->hl; ?>><?php echo $this->headline; ?></<?php echo $this->hl; ?>>
 	<?php endif; ?>
-	<?php if ($this->message): ?>
-		<div class="form-message">
-			<p class="<?php echo $this->mclass; ?>"><?php echo $this->message; ?></p>
-		</div>
-	<?php endif; ?>
-	<form action="<?php echo $this->action; ?>" id="<?php echo $this->formId; ?>" method="post">
+
+	<form action="<?php echo $this->action; ?>" id="<?php echo $this->formId; ?>" method="post" novalidate="novalidate">
 		<div class="formbody">
+
+		<?php if ($this->message): ?>
+			<div class="form-message">
+				<p class="alert alert-<?php echo $this->mclass; ?>"><?php echo $this->message; ?></p>
+			</div>
+		<?php endif; ?>
 		
 		<input type="hidden" name="FORM_SUBMIT" value="<?php echo $this->formId; ?>">
 		<input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}">
@@ -20,7 +22,7 @@
 			<?php endforeach; ?>
 		<?php endif; ?>
 		
-		<?php echo $this->forms['email']->generateWithError();?>
+		<?php echo $this->forms['email']->parse();?>
 		
 		<?php if ($this->showChannels): ?>
 			<label for="ctrl_channels_<?php echo $this->id; ?>" class="invisible"><?php echo $this->channelsLabel; ?></label>
@@ -32,17 +34,9 @@
 		<?php endif; ?>
 		
 		<div class="submit_container">
-			<input type="submit" name="submit" class="submit" value="<?php echo $this->submit; ?>">
+			<button type="submit" name="submit" class="submit btn btn-primary"><?php echo $this->submit; ?></button>
 		</div>
 		</div>
 	</form>
-	
-	<?php if ($this->message): ?>
-	<script>
-	try {
-		window.scrollTo(null, ($('<?php echo $this->formId; ?>').getParent('.mod_unsubscribe').getElement('div.form-message').getPosition().y - 20));
-	} catch(e) {}
-	</script>
-	<?php endif; ?>
 </div>
 <!-- indexer::continue -->

@@ -1,6 +1,8 @@
-<?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
+<?php
 
-class NewsletterPlus extends Newsletter
+namespace HeimrichHannot\NewsletterPlus;
+
+class NewsletterPlus extends \Newsletter
 {
 
 	public function __construct()

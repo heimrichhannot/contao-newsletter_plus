@@ -1,6 +1,8 @@
-<?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
+<?php
 
-class Subscriber extends Model
+namespace HeimrichHannot\NewsletterPlus;
+
+class Subscriber extends \Controller
 {
 	public $email;
 	public $pid;
@@ -29,7 +31,7 @@ class Subscriber extends Model
 	{
 		parent::__construct();
 		$this->email = $email;
-		$this->loadLanguageFile('tl_subscribe_plus');
+		\Controller::loadLanguageFile('tl_subscribe_plus');
 	}
 
 	/**
@@ -38,13 +40,18 @@ class Subscriber extends Model
 	public function dropInactiveSubscriptions()
 	{
 		// Remove old subscriptions that have not been activated yet
-		$this->Database->prepare("DELETE FROM tl_newsletter_recipients WHERE email=? AND active!=1")
+		\Database::getInstance()->prepare("DELETE FROM tl_newsletter_recipients WHERE email=? AND active!=1")
 														->execute($this->email, $this->pid);
 	}
 
-	public function getById($id)
+	public function getByChannel($pid)
 	{
-		$objSubscriber = $this->Database->prepare('SELECT * FROM tl_newsletter_recipients WHERE id = ?')->limit(1)->execute($id);
+		if(!is_numeric($pid))
+		{
+			return false;
+		}
+
+		$objSubscriber = \Database::getInstance()->prepare('SELECT * FROM tl_newsletter_recipients WHERE email = ? AND pid = ?')->limit(1)->execute($this->email, $pid);
 
 		if($objSubscriber->numRows)
 		{
@@ -55,7 +62,20 @@ class Subscriber extends Model
 		}
 	}
 
-	public function setByDc(DataContainer $dc, $overwrite=false)
+	public function getById($id)
+	{
+		$objSubscriber = \Database::getInstance()->prepare('SELECT * FROM tl_newsletter_recipients WHERE id = ?')->limit(1)->execute($id);
+
+		if($objSubscriber->numRows)
+		{
+			foreach($objSubscriber->fetchAssoc() as $key => $value)
+			{
+				$this->{$key} = $value;
+			}
+		}
+	}
+
+	public function setByDc(\DataContainer $dc, $overwrite=false)
 	{
 		foreach($this as $key => $value)
 		{
@@ -73,7 +93,7 @@ class Subscriber extends Model
 						 (pid, tstamp, email, active, addedOn, ip, token, salutation, title, firstname, lastname, company, street, ziploc, phone, comment)
 						 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-		$this->Database->prepare($stmt)->execute(
+		\Database::getInstance()->prepare($stmt)->execute(
 			$this->pid,
 			$this->tstamp,
 			$this->email,
@@ -93,23 +113,24 @@ class Subscriber extends Model
 		);
 
 		// Log activity
-		$this->log($this->email . ' subscribed to Channel with ID: ' . $this->pid, 'Subscriber add()', TL_NEWSLETTER);
+
+		\Controller::log($this->email . ' subscribed to Channel with ID: ' . $this->pid, 'Subscriber add()', TL_NEWSLETTER);
 	}
 
 	public function remove($channels)
 	{
 		// Remove subscriptions
-		$this->Database->prepare("DELETE FROM tl_newsletter_recipients WHERE email=? AND pid IN(" . implode(',', array_map('intval', $channels)) . ")")
+		\Database::getInstance()->prepare("DELETE FROM tl_newsletter_recipients WHERE email=? AND pid IN(" . implode(',', array_map('intval', $channels)) . ")")
 		->execute($this->email);
 
 		// Log activity
-		$this->log($this->email . ' unsubscribed from channels with IDs: ' . implode(', ', $channels), 'Subscriber remove()', TL_NEWSLETTER);
+		\Controller::log($this->email . ' unsubscribed from channels with IDs: ' . implode(', ', $channels), 'Subscriber remove()', TL_NEWSLETTER);
 	}
 
 	public function activateByToken($token)
 	{
 		// Check the token
-		$objRecipient = $this->Database->prepare("SELECT r.id, r.email, c.id AS cid, c.title, c.cleverreach_active FROM tl_newsletter_recipients r LEFT JOIN tl_newsletter_channel c ON r.pid=c.id WHERE token=?")
+		$objRecipient = \Database::getInstance()->prepare("SELECT r.id, r.email, c.id AS cid, c.title, c.cleverreach_active FROM tl_newsletter_recipients r LEFT JOIN tl_newsletter_channel c ON r.pid=c.id WHERE token=?")
 		->execute($token);
 
 		if ($objRecipient->numRows < 1)
@@ -135,11 +156,11 @@ class Subscriber extends Model
 		}
 
 		// Update subscriptions
-		$this->Database->prepare("UPDATE tl_newsletter_recipients SET active=1, token='' WHERE token=?")
+		\Database::getInstance()->prepare("UPDATE tl_newsletter_recipients SET active=1, token='' WHERE token=?")
 		->execute($token);
 
 		// Log activity
-		$this->log($objRecipient->email . ' has subscribed to ' . implode(', ', $arrChannels), 'Subscriber activateByToken()', TL_NEWSLETTER);
+		\Controller::log($objRecipient->email . ' has subscribed to ' . implode(', ', $arrChannels), 'Subscriber activateByToken()', TL_NEWSLETTER);
 
 		// HOOK: post activation callback
 		if (isset($GLOBALS['TL_HOOKS']['activateRecipient']) && is_array($GLOBALS['TL_HOOKS']['activateRecipient']))
@@ -196,7 +217,7 @@ class Subscriber extends Model
 			$this->registered = $time;
 			$this->add();
 
-			$objChannel = $this->Database->prepare("SELECT id FROM tl_newsletter_channel WHERE id = ? and cleverreach_active = 1")->limit(1)->execute($id);
+			$objChannel = \Database::getInstance()->prepare("SELECT id FROM tl_newsletter_channel WHERE id = ? and cleverreach_active = 1")->limit(1)->execute($id);
 
 			if($objChannel->numRows > 0)
 			{
@@ -212,9 +233,9 @@ class Subscriber extends Model
 
 	public function sendActivationMail($channels, $subject='', $text='')
 	{
-		$objChannel = $this->Database->prepare("SELECT id, title, nl_subject, nl_text, nl_sender_name, nl_sender_mail FROM tl_newsletter_channel WHERE id IN (".implode(',', $channels).")")->limit(1)->execute();
+		$objChannel = \Database::getInstance()->prepare("SELECT * FROM tl_newsletter_channel WHERE id IN (".implode(',', $channels).")")->limit(1)->execute();
 
-		$objEmail = new Email();
+		$objEmail = new \Email();
 
 		if(empty($subject))
 		{
@@ -228,16 +249,17 @@ class Subscriber extends Model
 
 		$strSubject = str_replace(array('##channel##', '##channels##'), implode(",", $objChannel->fetchEach('title')) , $subject);
 		$strText = str_replace('##salutation##', $this->getSalutation() , $text);
-		$strText = str_replace('##domain##', $this->Environment->host, $strText);
-		$strText = str_replace('##link##', $this->Environment->base . $this->Environment->request . (($GLOBALS['TL_CONFIG']['disableAlias'] || strpos($this->Environment->request, '?') !== false) ? '&' : '?') . 'token=' . $this->token, $strText);
+		$strText = str_replace('##domain##', \Idna::decode(\Environment::get('host')), $strText);
+		$strText = str_replace('##link##', \Idna::decode(\Environment::get('base')) . \Environment::get('request') . ((\Config::get('disableAlias') || strpos(\Environment::get('request'), '?') !== false) ? '&' : '?') . 'token=' . $this->token, $strText);
 		$strText = str_replace(array('##channel##', '##channels##'), implode("\n", $objChannel->fetchEach('title')), $strText);
 
 		$objEmail->from = $objChannel->first()->nl_sender_mail ?  $objChannel->first()->nl_sender_mail : $GLOBALS['TL_ADMIN_EMAIL'];
 		$objEmail->fromName = $objChannel->first()->nl_sender_name ?  $objChannel->first()->nl_sender_name : $GLOBALS['TL_ADMIN_NAME'];
-		$objEmail->subject = $strSubject;
-		$objEmail->text = $strText;
+		$objEmail->subject = $this->replaceInsertTags($strSubject);
+		$objEmail->text = $this->replaceInsertTags($strText);
 
-		if($objEmail->sendTo($this->email)){
+		if($objEmail->sendTo($this->email))
+		{
 			$_SESSION['SUBSCRIBE_CONFIRM'] = $GLOBALS['TL_LANG']['MSC']['nl_confirm'];
 			return true;
 		}
@@ -247,32 +269,39 @@ class Subscriber extends Model
 
 	public function sendUnSubscribeMail($channels, $subject='', $text='')
 	{
-		$objChannel = $this->Database->prepare("SELECT id, title, nl_subject, nl_text, nl_sender_name, nl_sender_mail FROM tl_newsletter_channel WHERE id IN (".implode(',', $channels).")")->limit(1)->execute();
+		$objChannel = \Database::getInstance()->prepare("SELECT * FROM tl_newsletter_channel WHERE id IN (".implode(',', $channels).")")->limit(1)->execute();
 
-		$objEmail = new Email();
+		$objEmail = new \Email();
 
 		if(empty($subject))
 		{
-			$subject = $objChannel->first()->nl_subject_unsubscribe;
+			$subject = $objChannel->first()->nl_unsubscribe_subject;
 		}
 
 		if(empty($text))
 		{
-			$text = $objChannel->first()->nl_text_unsubscribe;
+			$text = $objChannel->first()->nl_unsubscribe_text;
 		}
+
+		ob_start();
+		print_r($this);
+		print "\n";
+		file_put_contents(TL_ROOT . '/debug.txt', ob_get_contents(), FILE_APPEND);
+		ob_end_clean();
 
 		$strSubject = str_replace(array('##channel##', '##channels##'), implode(",", $objChannel->fetchEach('title')) , $subject);
 		$strText = str_replace('##salutation##', $this->getSalutation() , $text);
-		$strText = str_replace('##domain##', $this->Environment->host, $strText);
-		$strText = str_replace('##link##', $this->Environment->base . $this->Environment->request . (($GLOBALS['TL_CONFIG']['disableAlias'] || strpos($this->Environment->request, '?') !== false) ? '&' : '?') . 'token=' . $this->token, $strText);
+		$strText = str_replace('##domain##', \Idna::decode(\Environment::get('host')), $strText);
+		$strText = str_replace('##link##', \Idna::decode(\Environment::get('base')) . \Environment::get('request') . ((\Config::get('disableAlias') || strpos(\Environment::get('request'), '?') !== false) ? '&' : '?') . 'token=' . $this->token, $strText);
 		$strText = str_replace(array('##channel##', '##channels##'), implode("\n", $objChannel->fetchEach('title')), $strText);
 
-		$objEmail->from = $objChannel->first()->nl_sender_mail ?  $objChannel->first()->nl_sender_mail : $GLOBALS['TL_ADMIN_EMAIL'];
-		$objEmail->fromName = $objChannel->first()->nl_sender_name ?  $objChannel->first()->nl_sender_name : $GLOBALS['TL_ADMIN_NAME'];
-		$objEmail->subject = $strSubject;
-		$objEmail->text = $strText;
+		$objEmail->from = $objChannel->first()->nl_unsubscribe_sender_mail ?  $objChannel->first()->nl_unsubscribe_sender_mail : $GLOBALS['TL_ADMIN_EMAIL'];
+		$objEmail->fromName = $objChannel->first()->nl_unsubscribe_sender_name ?  $objChannel->first()->nl_unsubscribe_sender_name : $GLOBALS['TL_ADMIN_NAME'];
+		$objEmail->subject = $this->replaceInsertTags($strSubject);
+		$objEmail->text = $this->replaceInsertTags($strText);
 
-		if($objEmail->sendTo($this->email)){
+		if($objEmail->sendTo($this->email))
+		{
 			$_SESSION['UNSUBSCRIBE_CONFIRM'] = $GLOBALS['TL_LANG']['MSC']['nl_removed'];
 			return true;
 		}
@@ -284,7 +313,7 @@ class Subscriber extends Model
 	{
 		$stmt = "SELECT pid FROM tl_newsletter_recipients WHERE email=? AND active=1";
 
-		$objSubscription = $this->Database->prepare($stmt)->execute($this->email);
+		$objSubscription = \Database::getInstance()->prepare($stmt)->execute($this->email);
 
 		$subscriptions = array();
 
@@ -312,7 +341,7 @@ class Subscriber extends Model
 		$result = $soap->add($this);
 		if($result->status == self::$crsuccess)
 		{
-			$this->log($this->email . ' has subscribed to ' . $this->pid .' and successfully added to CleverReach with status inactive', 'Subscriber addToCR()', TL_NEWSLETTER);
+			\Controller::log($this->email . ' has subscribed to ' . $this->pid .' and successfully added to CleverReach with status inactive', 'Subscriber addToCR()', TL_NEWSLETTER);
 		}
 	}
 
@@ -323,7 +352,7 @@ class Subscriber extends Model
 		$result = $soap->update($this);
 		if($result->status == self::$crsuccess)
 		{
-			$this->log('Subscriber with E-Mail: '.$this->email . ' and channel ' . $this->pid .' successfully updated in CleverReach', 'Subscriber updateCR()', TL_NEWSLETTER);
+			\Controller::log('Subscriber with E-Mail: '.$this->email . ' and channel ' . $this->pid .' successfully updated in CleverReach', 'Subscriber updateCR()', TL_NEWSLETTER);
 		}
 	}
 
@@ -336,7 +365,7 @@ class Subscriber extends Model
 			$result = $soap->delete($this);
 			if($result->status == self::$crsuccess)
 			{
-				$this->log($this->email . ' has unsubscribed to ' . $cid .' and successfully removed from CleverReach', 'Subscriber removeFromCR()', TL_NEWSLETTER);
+				\Controller::log($this->email . ' has unsubscribed to ' . $cid .' and successfully removed from CleverReach', 'Subscriber removeFromCR()', TL_NEWSLETTER);
 			}
 		}
 	}
@@ -347,7 +376,7 @@ class Subscriber extends Model
 		$result = $soap->setActive($this);
 		if($result->status == self::$crsuccess)
 		{
-			$this->log($this->email . ' has been successfully activated to CleverReach for Channel ID' . $this->pid , 'Subscriber activateCR()', TL_NEWSLETTER);
+			\Controller::log($this->email . ' has been successfully activated to CleverReach for Channel ID' . $this->pid , 'Subscriber activateCR()', TL_NEWSLETTER);
 		}
 	}
 
@@ -357,7 +386,7 @@ class Subscriber extends Model
 		$result = $soap->setInActive($this);
 		if($result->status == self::$crsuccess)
 		{
-			$this->log($this->email . ' has been successfully deactivated to CleverReach for Channel ID' . $this->pid , 'Subscriber deActivateCR()', TL_NEWSLETTER);
+			\Controller::log($this->email . ' has been successfully deactivated to CleverReach for Channel ID' . $this->pid , 'Subscriber deActivateCR()', TL_NEWSLETTER);
 		}
 	}
 
