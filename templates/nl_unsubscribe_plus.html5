@@ -13,7 +13,7 @@
 				<p class="alert alert-<?php echo $this->mclass; ?>"><?php echo $this->message; ?></p>
 			</div>
 		<?php endif; ?>
-		
+
 		<input type="hidden" name="FORM_SUBMIT" value="<?php echo $this->formId; ?>">
 		<input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}">
 		<?php if (!$this->showChannels): ?>
@@ -21,9 +21,9 @@
 				<input type="hidden" name="channels[]" value="<?php echo $id; ?>">
 			<?php endforeach; ?>
 		<?php endif; ?>
-		
+
 		<?php echo $this->forms['email']->parse();?>
-		
+
 		<?php if ($this->showChannels): ?>
 			<label for="ctrl_channels_<?php echo $this->id; ?>" class="invisible"><?php echo $this->channelsLabel; ?></label>
 			<div id="ctrl_channels_<?php echo $this->id; ?>" class="checkbox_container">
@@ -32,7 +32,7 @@
 				<?php endforeach; ?>
 			</div>
 		<?php endif; ?>
-		
+
 		<div class="submit_container">
 			<button type="submit" name="submit" class="submit btn btn-primary"><?php echo $this->submit; ?></button>
 		</div>

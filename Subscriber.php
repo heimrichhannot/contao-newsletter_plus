@@ -283,12 +283,6 @@ class Subscriber extends \Controller
 			$text = $objChannel->first()->nl_unsubscribe_text;
 		}
 
-		ob_start();
-		print_r($this);
-		print "\n";
-		file_put_contents(TL_ROOT . '/debug.txt', ob_get_contents(), FILE_APPEND);
-		ob_end_clean();
-
 		$strSubject = str_replace(array('##channel##', '##channels##'), implode(",", $objChannel->fetchEach('title')) , $subject);
 		$strText = str_replace('##salutation##', $this->getSalutation() , $text);
 		$strText = str_replace('##domain##', \Idna::decode(\Environment::get('host')), $strText);

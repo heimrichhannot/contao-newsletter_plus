@@ -93,7 +93,7 @@ class ModuleSubscribePlus extends \ModuleSubscribe
 		$this->Template->emailLabel = $GLOBALS['TL_LANG']['MSC']['emailAddress'];
 		$this->Template->formId = $this->strFormId;
 		$this->Template->id = $this->id;
-		
+
 		// Activate e-mail address
 		if ($this->Input->get('token') && !$_SESSION['SUBSCRIBED'])
 		{
