@@ -53,7 +53,7 @@ $GLOBALS['TL_DCA']['tl_subscribe_plus'] = array(
 			'label'     => &$GLOBALS['TL_LANG']['tl_subscribe_plus']['email'],
 			'flag'      => 1,
 			'inputType' => 'text',
-			'eval'      => array('beEditable' => false, 'rgxp' => 'email', 'required' => true, 'mandatory' => true, 'placeholder' => $GLOBALS['TL_LANG']['tl_subscribe_plus']['emailPlaceHolder']),
+			'eval'      => array('beEditable' => false, 'rgxp' => 'email', 'required' => true, 'mandatory' => true),
 			'sql'       => "varchar(255) NOT NULL default ''"
 		),
 		'street'    => array(

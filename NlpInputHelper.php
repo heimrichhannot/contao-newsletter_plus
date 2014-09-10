@@ -26,7 +26,7 @@ class NlpInputHelper extends \Frontend
 		// load additional inputs
 		$active = deserialize($channel->subscribeplus_inputs, true);
 		$required = deserialize($channel->subscribeplus_required_inputs, true);
-	
+
 		$forms = array();
 		
 		if(!empty($active))
