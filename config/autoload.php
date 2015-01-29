@@ -3,7 +3,7 @@
 /**
  * Contao Open Source CMS
  *
- * Copyright (c) 2005-2014 Leo Feyer
+ * Copyright (c) 2005-2015 Leo Feyer
  *
  * @package Newsletter_plus
  * @link    https://contao.org
@@ -25,17 +25,22 @@ ClassLoader::addNamespaces(array
  */
 ClassLoader::addClasses(array
 (
-	'HeimrichHannot\NewsletterPlus\NlpInputHelper'             => 'system/modules/newsletter_plus/NlpInputHelper.php',
-	'HeimrichHannot\NewsletterPlus\Subscriber'                 => 'system/modules/newsletter_plus/Subscriber.php',
-	'HeimrichHannot\NewsletterPlus\NewsletterFormSubscribe'    => 'system/modules/newsletter_plus/NewsletterFormSubscribe.php',
-	'HeimrichHannot\NewsletterPlus\ChannelWizard'              => 'system/modules/newsletter_plus/ChannelWizard.php',
-	'HeimrichHannot\NewsletterPlus\NewsletterPlus'             => 'system/modules/newsletter_plus/NewsletterPlus.php',
-	'HeimrichHannot\NewsletterPlus\CleverRearchSoapHelper'     => 'system/modules/newsletter_plus/CleverRearchSoapHelper.php',
-	'HeimrichHannot\NewsletterPlus\ModuleSubscribePlus'        => 'system/modules/newsletter_plus/ModuleSubscribePlus.php',
-	'HeimrichHannot\NewsletterPlus\ChannelFieldWizard'         => 'system/modules/newsletter_plus/ChannelFieldWizard.php',
-	'HeimrichHannot\NewsletterPlus\ModuleRegistrationPlus'     => 'system/modules/newsletter_plus/ModuleRegistrationPlus.php',
-	'HeimrichHannot\NewsletterPlus\ModuleUnsubscribePlus'      => 'system/modules/newsletter_plus/ModuleUnsubscribePlus.php',
-	'HeimrichHannot\NewsletterPlus\NewsletterFormSubscribeMsg' => 'system/modules/newsletter_plus/NewsletterFormSubscribeMsg.php',
+	// Modules
+	'HeimrichHannot\NewsletterPlus\ModuleSubscribePlus'        => 'system/modules/newsletter_plus/modules/ModuleSubscribePlus.php',
+	'HeimrichHannot\NewsletterPlus\ModuleRegistrationPlus'     => 'system/modules/newsletter_plus/modules/ModuleRegistrationPlus.php',
+	'HeimrichHannot\NewsletterPlus\ModuleUnsubscribePlus'      => 'system/modules/newsletter_plus/modules/ModuleUnsubscribePlus.php',
+
+	// Widgets
+	'HeimrichHannot\NewsletterPlus\NewsletterFormSubscribe'    => 'system/modules/newsletter_plus/widgets/NewsletterFormSubscribe.php',
+	'HeimrichHannot\NewsletterPlus\ChannelWizard'              => 'system/modules/newsletter_plus/widgets/ChannelWizard.php',
+	'HeimrichHannot\NewsletterPlus\ChannelFieldWizard'         => 'system/modules/newsletter_plus/widgets/ChannelFieldWizard.php',
+	'HeimrichHannot\NewsletterPlus\NewsletterFormSubscribeMsg' => 'system/modules/newsletter_plus/widgets/NewsletterFormSubscribeMsg.php',
+
+	// Classes
+	'HeimrichHannot\NewsletterPlus\NlpInputHelper'             => 'system/modules/newsletter_plus/classes/NlpInputHelper.php',
+	'HeimrichHannot\NewsletterPlus\Subscriber'                 => 'system/modules/newsletter_plus/classes/Subscriber.php',
+	'HeimrichHannot\NewsletterPlus\NewsletterPlus'             => 'system/modules/newsletter_plus/classes/NewsletterPlus.php',
+	'HeimrichHannot\NewsletterPlus\CleverRearchSoapHelper'     => 'system/modules/newsletter_plus/classes/CleverRearchSoapHelper.php',
 ));
 
 

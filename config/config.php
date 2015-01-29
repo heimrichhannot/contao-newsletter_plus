@@ -1,4 +1,4 @@
-<?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
+<?php
 
 
 array_insert($GLOBALS['BE_FFL'], 4, array
@@ -12,8 +12,8 @@ array_insert($GLOBALS['BE_FFL'], 4, array
 /**
  * Front end modules
  */
-$GLOBALS['FE_MOD']['newsletter']['subscribe'] = 'HeimrichHannot\NewsletterPlus\ModuleSubscribePlus';
-$GLOBALS['FE_MOD']['newsletter']['unsubscribe'] = 'HeimrichHannot\NewsletterPlus\ModuleUnsubscribePlus';
+$GLOBALS['FE_MOD']['newsletter']['subscribe_plus'] = 'HeimrichHannot\NewsletterPlus\ModuleSubscribePlus';
+$GLOBALS['FE_MOD']['newsletter']['unsubscribe_plus'] = 'HeimrichHannot\NewsletterPlus\ModuleUnsubscribePlus';
 
 
 $GLOBALS['TL_HOOKS']['processFormData'][] = array('HeimrichHannot\NewsletterPlus\NewsletterFormSubscribe', 'processSubmittedData');
