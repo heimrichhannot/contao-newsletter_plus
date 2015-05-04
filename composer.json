@@ -1,0 +1,32 @@
+{
+    "name": "heimrichhannot/contao-newsletter_plus",
+    "description":"Newsletter improvements and new functionality to the contao newsletter module.",
+    "keywords":["contao", "newsletter"],
+    "type": "contao-module",
+    "homepage":"https://github.com/heimrichhannot/contao-newsletter_plus",
+    "license":"LGPL-3.0+",
+    "authors":[
+        {
+            "name":"Heimrich & Hannot",
+            "email":"digitales@heimrich-hannot.de",
+            "homepage":"http://www.heimrich-hannot.de",
+            "role":"Developer"
+        }
+    ],
+    "support":{
+        "issues":"https://github.com/heimrichhannot/contao-newsletter_plus/issues"
+    },
+    "require": {
+        "contao/core": ">=3.2,<4-dev"
+    },
+    "autoload": {
+        "classmap": [""]
+    },
+    "extra": {
+        "contao": {
+            "sources": {
+                "": "system/modules/newsletter_plus"
+            }
+        }
+    }
+}
