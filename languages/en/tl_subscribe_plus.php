@@ -39,3 +39,9 @@ $GLOBALS['TL_LANG']['tl_subscribe_plus']['shopEmailText'] = "Dear ##salutation##
  */
 
 $GLOBALS['TL_LANG']['ERR']['subscribed_single'] = "Sie haben den Verteiler '%s' bereits abonniert.";
+
+
+/**
+ * Placeholders
+ */
+$GLOBALS['TL_LANG']['tl_subscribe_plus']['placeholders']['email'] = 'Email';
