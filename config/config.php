@@ -14,7 +14,7 @@ array_insert($GLOBALS['BE_FFL'], 4, array
  */
 $GLOBALS['FE_MOD']['newsletter']['subscribe_plus'] = 'HeimrichHannot\NewsletterPlus\ModuleSubscribePlus';
 $GLOBALS['FE_MOD']['newsletter']['unsubscribe_plus'] = 'HeimrichHannot\NewsletterPlus\ModuleUnsubscribePlus';
-
+$GLOBALS['FE_MOD']['newsletter']['nl_archive'] = 'HeimrichHannot\NewsletterPlus\ModuleNewsletterArchive';
 
 $GLOBALS['TL_HOOKS']['processFormData'][] = array('HeimrichHannot\NewsletterPlus\NewsletterFormSubscribe', 'processSubmittedData');
 

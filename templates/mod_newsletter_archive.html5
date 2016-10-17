@@ -1,0 +1,40 @@
+<?php $this->extend('block_unsearchable'); ?>
+<?php $this->block('content'); ?>
+<div id="newsletter_archive">
+	<?php foreach($this->archives as $year => $arrNL):?>
+		<section class="panel panel-default ce_accordionStart ce_accordion block"<?php if ($this->style): ?> style="<?php echo $this->style; ?>"<?php endif; ?>>
+			<div class="panel-heading toggler"<?php if ($this->headlineStyle): ?> style="<?php echo $this->headlineStyle; ?>"<?php endif; ?>>
+				<h5 class="panel-title">
+					<a class="collapsed" data-toggle="collapse" data-parent="#partner" href="#<?= 'year_' . $year; ?>"><?= $year; ?></a>
+				</h5>
+			</div>
+			<div class="panel-collapse collapse" id="<?= 'year_' . $year; ?>">
+				<div class="panel-body level_1" id="nl_archive_<?= $year; ?>">
+					<?php foreach($arrNL as $nl): ?>
+					<section class="panel panel-default ce_accordionStart ce_accordion block"<?php if ($this->style): ?> style="<?php echo $this->style; ?>"<?php endif; ?>>
+						<div class="panel-heading toggler"<?php if ($this->headlineStyle): ?> style="<?php echo $this->headlineStyle; ?>"<?php endif; ?>>
+							<h5 class="panel-title">
+								<a class="collapsed" data-toggle="collapse" data-parent="#partner" href="#<?= 'nl_' . $nl->id; ?>"><?= $nl->subject; ?></a>
+							</h5>
+						</div>
+						<div class="panel-collapse collapse" id="<?= 'nl_' . $nl->id; ?>">
+							<div class="panel-body level_2" id="nl_archive_<?= $year; ?>">
+								<div class="summary">
+									<?= $nl->summary; ?>
+								</div>
+								<div class="links">
+									<ul>
+										<li><a href="{{link_url::<?= $this->jumpTo ?>}}/<?= $nl->alias?>" class="more">Newsletter lesen</a></li>
+										<li><a href="<?= $nl->file?>" class="more" download>Download</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</section>
+					<?php endforeach; ?>
+				</div>
+			</div>
+		</section>
+	<?php endforeach; ?>
+</div>
+<?php $this->endblock(); ?>
