@@ -25,7 +25,9 @@
 								<div class="links">
 									<ul>
 										<li><a href="{{link_url::<?= $this->jumpTo ?>}}/<?= $nl->alias?>" class="more">Newsletter lesen</a></li>
+										<?php if($nl->file):?>
 										<li><a href="<?= $nl->file?>" class="more" download>Download</a></li>
+										<?php endif; ?>
 									</ul>
 								</div>
 							</div>
@@ -38,3 +40,4 @@
 	<?php endforeach; ?>
 </div>
 <?php $this->endblock(); ?>
+

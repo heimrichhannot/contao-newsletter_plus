@@ -11,6 +11,7 @@
 
 namespace HeimrichHannot\NewsletterPlus;
 
+
 class NewsArchive
 {
 	public function getArchives()
@@ -25,10 +26,11 @@ class NewsArchive
 			$objNl->alias = $objArchives->alias;
 			$objNl->subject = $objArchives->subject;
 			$objNl->summary = $objArchives->summary;
-			$objNl->file = deserialize($objArchives->files, false)[0];
+			$objNl->file = \FilesModel::findByUuid(deserialize($objArchives->files)[0])->path;
 
 			$arrArchives[$objArchives->year][] = $objNl;
 		}
+
 		return $arrArchives;
 	}
 }
