@@ -21,6 +21,8 @@ $GLOBALS['TL_LANG']['tl_subscribe_plus']['street'] = array('Your street and hous
 $GLOBALS['TL_LANG']['tl_subscribe_plus']['ziploc'] = array('Your Zip Code and City', 'The Zip Code and City of the newsletter subscribers.');
 $GLOBALS['TL_LANG']['tl_subscribe_plus']['phone'] = array('Your telephone number', 'The telephone number of the newsletter subscribers.');
 $GLOBALS['TL_LANG']['tl_subscribe_plus']['comment'] = array('Comments', 'The comments of the newsletter subscribers.');
+$GLOBALS['TL_LANG']['tl_subscribe_plus']['captcha'] = array('Security question', 'A simple math question to verify that the form is being submitted by a human (CAPTCHA).');
+
 
 /**
  * E-Mail Message Keys

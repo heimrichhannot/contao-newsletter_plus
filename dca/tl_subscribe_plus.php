@@ -74,7 +74,7 @@ $GLOBALS['TL_DCA']['tl_subscribe_plus'] = array(
 			'label'     => &$GLOBALS['TL_LANG']['tl_subscribe_plus']['phone'],
 			'flag'      => 1,
 			'inputType' => 'text',
-			'eval'      => array('beEditable' => true),
+			'eval'      => array('beEditable' => true, 'rgxp' => 'phone'),
 			'sql'       => "varchar(64) NOT NULL default ''"
 		),
 		'comment'   => array(
@@ -83,6 +83,17 @@ $GLOBALS['TL_DCA']['tl_subscribe_plus'] = array(
 			'inputType' => 'textarea',
 			'eval'      => array('beEditable' => true),
 			'sql'		=> 'text NULL'
+		),
+		// misc
+		'captcha'         => array(
+		    'label'     => &$GLOBALS['TL_LANG']['tl_subscribe_plus']['captcha'],
+		    'inputType' => 'captcha',
+		    'eval'      => array(
+		        'mandatory' => true,
+		        'required'  => true,
+		        'tableless' => true,
+		        'beEditable' => true,
+		    ),
 		),
 	),
 );
